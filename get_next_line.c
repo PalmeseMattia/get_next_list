@@ -82,9 +82,8 @@ void clean_string(char *str)
 	memmove(str, eol, len);
 }
 
-/* Create the result string traversing the list to find the size
- * and then traversing again to copy the content of the nodes
- */
+/* Create the result string traversing the list
+*/
 char	*create_string(t_list *parent_node)
 {
 	int		size;
@@ -92,9 +91,28 @@ char	*create_string(t_list *parent_node)
 	char	*result;
 	t_list	*current_node;
 
+	current_node = parent_node;
+	size = get_string_size(current_node);
+	result = calloc(size + 1, sizeof(char));
+	while(current_node -> next) {
+		strncpy(result + strlen(result), current_node -> content, strlen(current_node -> content));
+		current_node = current_node -> next;
+	}
+	strncpy(result + strlen(result), current_node -> content, eol - current_node -> content + 1);
+	return (result);
+}
+
+/* Returns the size of the string created by the nodes
+ * of a linked list.
+ */
+int	get_string_size(t_list *parent_node)
+{
+	t_list	*current_node;
+	char	*eol;
+	int size;
+
 	size = 0;
 	current_node = parent_node;
-	//Get size TODO: in another separate function
 	while (1) {
 		eol = get_nl_eof(current_node -> content);
 		if (eol) {
@@ -104,17 +122,12 @@ char	*create_string(t_list *parent_node)
 		size += strlen(current_node -> content);
 		current_node = current_node -> next;
 	}
-	result = calloc(size + 1, sizeof(char));
-	//Copy string
-	current_node = parent_node;
-	while(current_node -> next) {
-		strncpy(result + strlen(result), current_node -> content, strlen(current_node -> content));
-		current_node = current_node -> next;
-	}
-	strncpy(result + strlen(result), current_node -> content, eol - current_node -> content + 1);
-	return result;
+	return (size);
 }
 
+/* Returns the first occurence of newline or EOF
+ * Returns NULL if string is null
+ */
 char	*get_nl_eof(char *str)
 {
 	if (!str)
