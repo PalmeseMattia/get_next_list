@@ -1,90 +1,81 @@
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#define BUFFER_SIZE 10
-
-typedef struct s_list {
-	char			*content;
-	struct s_list	*next;
-}	t_list;
-
-t_list	*new_node();
-char	*ft_strchr(char *str, char c);
-char	*get_next_line(int fd);
-char	*get_nl_eof(char *str);
-char	*create_string(t_list *parent_node);
-void	clean_string(char *str);
-
-int main()
-{
-	int	fd;
-
-	printf(">> get_next_line list version!\n");
-	fd = open("file.txt", O_RDONLY);
-	if (fd < 0) {
-		perror("Error while opening file");
-		exit(EXIT_FAILURE);
-	}
-	printf("----- LINES -----\n\n");
-	char *result;
-	while((result = get_next_line(fd)))
-		printf("%s", result);
-	close (fd);
-	return (0);
-}
+#include "get_next_line.h"
 
 char	*get_next_line(int fd)
 {
 	static t_list	*parent_node = NULL;
-	t_list			*current_node;
-	int				chars_read;
+	t_list			*tmp_node;
 
 	if (fd < 0)
 		return NULL;
 	if (parent_node == NULL)
 		parent_node = new_node();
-	current_node = parent_node;
-	if(!get_nl_eof(current_node -> content)) {
-		if (current_node -> content != NULL) {
-		current_node -> next = new_node();
-		current_node = current_node -> next;
-		}
-		current_node -> content = calloc(BUFFER_SIZE + 1, sizeof(char));
-		chars_read = read(fd, current_node -> content, BUFFER_SIZE);
-		if (chars_read <= 0)
-			return NULL;
-		while(chars_read > 0) {
-			if (ft_strchr(current_node -> content, '\n') 
-					|| ft_strchr(current_node -> content, EOF)) {
-				break;
-			}
-			current_node -> next = new_node();
-			current_node = current_node -> next;
-			current_node -> content = calloc(BUFFER_SIZE + 1, sizeof(char));
-			chars_read = read(fd, current_node -> content, BUFFER_SIZE);	
-		}
+	tmp_node = create_list(fd, parent_node);
+	if (tmp_node == NULL)
+	{
+		free(parent_node);
+		return (NULL);
 	}
-	char *result = create_string(parent_node);	//Create the final string
-	parent_node = current_node;					//Set the last node as the new parent
-	clean_string(parent_node -> content);
+	char *result = create_string_from_list(tmp_node);	//Create the final string
+	while(tmp_node -> next)
+		tmp_node = tmp_node-> next;
+	clean_string(tmp_node -> content);
+	parent_node = free_list(parent_node);
 	return (result); 
 }
+
+t_list	*free_list(t_list *parent_node) {
+    t_list *current_node = parent_node;
+    while (current_node -> next) {
+        t_list *next = current_node->next;
+        free(current_node->content);
+        free(current_node);
+        current_node = next;
+    }
+	return (current_node);
+}
+
+t_list	*create_list(int fd, t_list *parent_node)
+{
+	t_list	*current_node;
+	int		chars_read;
+
+	if (get_eol(parent_node -> content))
+		return (parent_node);
+	current_node = parent_node;
+	if (current_node -> content != NULL)
+	{
+		current_node -> next = new_node();
+		current_node = current_node -> next;
+	}
+	chars_read = read(fd, current_node -> content, BUFFER_SIZE);
+	if (chars_read <= 0)
+		return NULL;
+	while (chars_read > 0)
+	{
+		if (get_eol(current_node -> content)) {
+			break;
+		}
+		current_node -> next = new_node();
+		current_node = current_node -> next;
+		chars_read = read(fd, current_node -> content, BUFFER_SIZE);	
+	}
+	return parent_node;
+}
+
+
 /* Removes everything before new line
  * and prepares the node for the next iteration
  */
 void clean_string(char *str)
 {
-	char *eol = get_nl_eof(str) + 1;
+	char *eol = get_eol(str) + 1;
 	int len = strlen(eol) + 1;
 	memmove(str, eol, len);
 }
 
 /* Create the result string traversing the list
 */
-char	*create_string(t_list *parent_node)
+char	*create_string_from_list(t_list *parent_node)
 {
 	int		size;
 	char	*eol;
@@ -98,6 +89,7 @@ char	*create_string(t_list *parent_node)
 		strncpy(result + strlen(result), current_node -> content, strlen(current_node -> content));
 		current_node = current_node -> next;
 	}
+	eol = get_eol(current_node -> content);
 	strncpy(result + strlen(result), current_node -> content, eol - current_node -> content + 1);
 	return (result);
 }
@@ -114,7 +106,7 @@ int	get_string_size(t_list *parent_node)
 	size = 0;
 	current_node = parent_node;
 	while (1) {
-		eol = get_nl_eof(current_node -> content);
+		eol = get_eol(current_node -> content);
 		if (eol) {
 			size += eol - current_node -> content;
 			break;
@@ -128,7 +120,7 @@ int	get_string_size(t_list *parent_node)
 /* Returns the first occurence of newline or EOF
  * Returns NULL if string is null
  */
-char	*get_nl_eof(char *str)
+char	*get_eol(char *str)
 {
 	if (!str)
 		return NULL;
@@ -148,8 +140,10 @@ t_list	*new_node()
 
 	node = malloc(sizeof(t_list));
 	if (node == NULL)
-		return NULL;
-	node -> content = NULL;
+		return (NULL);
+	node -> content = calloc(BUFFER_SIZE + 1, sizeof(char));
+	if (node -> content == NULL)
+		return (NULL);
 	node -> next = NULL;
 	return (node);
 }
