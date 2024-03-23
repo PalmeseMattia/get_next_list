@@ -23,16 +23,15 @@ int main()
 	int	fd;
 
 	printf(">> get_next_line list version!\n");
-	fd = open("test.txt", O_RDONLY);
+	fd = open("file.txt", O_RDONLY);
 	if (fd < 0) {
 		perror("Error while opening file");
 		exit(EXIT_FAILURE);
 	}
 	printf("----- LINES -----\n\n");
-	printf("%s", (get_next_line(fd)));
-	printf("%s", (get_next_line(fd)));
-	printf("%s", (get_next_line(fd)));
-	printf("%s", (get_next_line(fd)));
+	char *result;
+	while((result = get_next_line(fd)))
+		printf("%s", result);
 	close (fd);
 	return (0);
 }
@@ -48,51 +47,44 @@ char	*get_next_line(int fd)
 	if (parent_node == NULL)
 		parent_node = new_node();
 	current_node = parent_node;
-	// If the parent node contains stuff from previous iterations
-	if (current_node -> content != NULL) {
+	if(!get_nl_eof(current_node -> content)) {
+		if (current_node -> content != NULL) {
 		current_node -> next = new_node();
 		current_node = current_node -> next;
-	}
-	current_node -> content = calloc(BUFFER_SIZE + 1, sizeof(char));
-	chars_read = read(fd, current_node -> content, BUFFER_SIZE);
-	if (chars_read <= 0)
-		return NULL;
-	while(chars_read > 0) {
-		if (ft_strchr(current_node -> content, '\n') 
-				|| ft_strchr(current_node -> content, EOF)) {
-			break;
 		}
-		current_node -> next = new_node();
-		current_node = current_node -> next;
 		current_node -> content = calloc(BUFFER_SIZE + 1, sizeof(char));
-		chars_read = read(fd, current_node -> content, BUFFER_SIZE);	
+		chars_read = read(fd, current_node -> content, BUFFER_SIZE);
+		if (chars_read <= 0)
+			return NULL;
+		while(chars_read > 0) {
+			if (ft_strchr(current_node -> content, '\n') 
+					|| ft_strchr(current_node -> content, EOF)) {
+				break;
+			}
+			current_node -> next = new_node();
+			current_node = current_node -> next;
+			current_node -> content = calloc(BUFFER_SIZE + 1, sizeof(char));
+			chars_read = read(fd, current_node -> content, BUFFER_SIZE);	
+		}
 	}
-	if (chars_read <= 0)
-		return NULL;
 	char *result = create_string(parent_node);	//Create the final string
 	parent_node = current_node;					//Set the last node as the new parent
 	clean_string(parent_node -> content);
 	return (result); 
 }
-/*  *****
- *  *
- *******
-    *  *
- ****  *
-Removes everything before new line
-*  *****
-*  *
-*******
-   *  *
-****  */
+/* Removes everything before new line
+ * and prepares the node for the next iteration
+ */
 void clean_string(char *str)
 {
-	//memmove struff from after the newline at the begininng
 	char *eol = get_nl_eof(str) + 1;
-	int len = strlen(eol) + 1; //get the string terminator
+	int len = strlen(eol) + 1;
 	memmove(str, eol, len);
 }
 
+/* Create the result string traversing the list to find the size
+ * and then traversing again to copy the content of the nodes
+ */
 char	*create_string(t_list *parent_node)
 {
 	int		size;
@@ -102,7 +94,7 @@ char	*create_string(t_list *parent_node)
 
 	size = 0;
 	current_node = parent_node;
-	//Get size
+	//Get size TODO: in another separate function
 	while (1) {
 		eol = get_nl_eof(current_node -> content);
 		if (eol) {
@@ -125,6 +117,8 @@ char	*create_string(t_list *parent_node)
 
 char	*get_nl_eof(char *str)
 {
+	if (!str)
+		return NULL;
 	while (*str) {
 		if (*str == '\n' || *str == EOF)
 			return str;
@@ -133,8 +127,7 @@ char	*get_nl_eof(char *str)
 	return NULL;
 }
 
-/**
- * Creates a new node for our linked list
+/* Creates a new node for our linked list
  */
 t_list	*new_node()
 {
