@@ -1,4 +1,0 @@
-ciao prima riga
-
-welcome seconda riga
-hola terza riga

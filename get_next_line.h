@@ -4,26 +4,25 @@
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
-
-#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-typedef struct s_list {
+typedef struct s_node {
 	char			*content;
-	struct s_list	*next;
-}	t_list;
+	struct s_node 	*next;
+} t_node;
 
-t_list	*new_node();
-char	*ft_strchr(char *str, char c);
-char	*get_next_line(int fd);
-char	*get_eol(char *str);
-char	*create_string_from_list(t_list *parent_node);
-void	clean_string(char *str);
-t_list	*create_list(int fd, t_list *parent_node);
-int		get_string_size(t_list *parent_node);
-t_list	*free_list(t_list *parent_node);
+char *get_next_line(int fd);
+t_node *new_node();
+void free_list(t_node **head);
+void create_list(int fd, t_node **list, char *buffer);
+t_node *lstadd_back(t_node **head, t_node *new_node);
+char *join_list(t_node **list);
+void split_result(char *line, char *buffer);
+size_t	ft_strlcpy(char *dest, const char *src, size_t size);
+size_t	ft_strlen(const char *s);
 
 #endif
