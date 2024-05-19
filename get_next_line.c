@@ -25,10 +25,7 @@ char	*get_next_line(int fd)
 	if (fd < 0)
 		return (NULL);
 	if (!buffer)
-	{
 		buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-		buffer[BUFFER_SIZE] = '\0';
-	}
 	create_list(fd, &list, buffer);
 	if (!list)
 	{
@@ -43,7 +40,7 @@ char	*get_next_line(int fd)
 
 /*
  * Create a linked list with the reads from the file descriptor,
- * until a newline of eof character is found
+ * until a newline or eof character is found
  */
 void	create_list(int fd, t_node **list, char *bf)
 {
@@ -86,21 +83,19 @@ char	*join_list(t_node **list)
 	result_len = 0;
 	off = 0;
 	node = *list;
-	while (node -> next)
+	while (node)
 	{
 		result_len += ft_strlen(node -> str);
 		node = node -> next;
 	}
-	result_len += ft_strlen(node -> str);
 	node = *list;
 	res = ft_calloc(result_len + 1, sizeof(char));
 	res[result_len] = '\0';
-	while (node -> next)
+	while (node)
 	{
 		off += ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
 		node = node -> next;
 	}
-	ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
 	return (res);
 }
 
