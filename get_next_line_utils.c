@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-t_node	*new_node(unsigned int content_size)
+t_node	*new_node(unsigned int content_size, char *content)
 {
 	t_node	*node;
 
@@ -27,6 +27,8 @@ t_node	*new_node(unsigned int content_size)
 			free(node);
 			return (NULL);
 		}
+		if (content != NULL)
+			ft_strlcpy(node -> str, content, ft_strlen(content) + 1);
 	}
 	else
 		node -> str = NULL;

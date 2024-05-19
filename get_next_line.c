@@ -32,8 +32,8 @@ char	*get_next_line(int fd)
 		free(buffer);
 		return (NULL);
 	}
-	result = join_list(&list);
-	split_result(result, buffer);
+	result = join_list(&list, buffer);
+	//split_result(result, buffer);
 	free_list(&list);
 	return (result);
 }
@@ -58,7 +58,7 @@ void	create_list(int fd, t_node **list, char *bf)
 		chars = read(fd, buffer, BUFFER_SIZE);
 	while (chars > 0)
 	{
-		node = new_node(chars + 1);
+		node = new_node(chars + 1, NULL);
 		ft_strlcpy(node -> str, buffer, chars + 1);
 		lstadd_back(list, node);
 		if (strchr(buffer, '\n') || strchr(buffer, EOF))
@@ -73,27 +73,34 @@ void	create_list(int fd, t_node **list, char *bf)
  * then alloc and write the result string.
  * Measure, alloc and write :)
  */
-char	*join_list(t_node **list)
+char	*join_list(t_node **list, char *buffer)
 {
 	char	*res;
-	int		result_len;
+	int		res_len;
 	t_node	*node;
 	int		off;
+	char	*nl;
 
-	result_len = 0;
+	res_len = 0;
 	off = 0;
 	node = *list;
 	while (node)
 	{
-		result_len += ft_strlen(node -> str);
+		res_len += ft_strlen(node -> str);
 		node = node -> next;
 	}
 	node = *list;
-	res = ft_calloc(result_len + 1, sizeof(char));
+	res = ft_calloc(res_len + 1, sizeof(char));
 	while (node)
 	{
 		off += ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
 		node = node -> next;
+	}
+	nl = strchr(res, '\n');
+	if (nl)
+	{
+		ft_strlcpy(buffer, nl + 1, (nl + 1) - buffer);
+		*(nl + 1) = '\0';
 	}
 	return (res);
 }
