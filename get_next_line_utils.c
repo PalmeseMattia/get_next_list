@@ -21,15 +21,15 @@ t_node	*new_node(unsigned int content_size)
 	node -> next = NULL;
 	if (content_size != 0)
 	{
-		node -> content = calloc(content_size, sizeof(char));
-		if (!node -> content)
+		node -> str = ft_calloc(content_size, sizeof(char));
+		if (!node -> str)
 		{
 			free(node);
 			return (NULL);
 		}
 	}
 	else
-		node -> content = NULL;
+		node -> str = NULL;
 	return (node);
 }
 
@@ -42,8 +42,8 @@ void	free_list(t_node **list)
 	while (curr)
 	{
 		next = curr->next;
-		if (curr->content)
-			free(curr->content);
+		if (curr->str)
+			free(curr->str);
 		free(curr);
 		curr = next;
 	}
@@ -67,10 +67,13 @@ size_t	ft_strlen(const char *s)
 	size_t	len;
 
 	len = 0;
-	while (*s)
+	if (*s)
 	{
-		len++;
-		s++;
+		while (*s)
+		{
+			len++;
+			s++;
+		}
 	}
 	return (len);
 }

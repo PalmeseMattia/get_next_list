@@ -1,6 +1,6 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
-
+//10000000 BUFF SIZE test
 # ifndef BUFFER_SIZE
 #  define BUFFER_SIZE 42
 # endif
@@ -11,7 +11,7 @@
 #include <unistd.h>
 
 typedef struct s_node {
-	char			*content;
+	char			*str;
 	struct s_node 	*next;
 } t_node;
 
@@ -24,5 +24,6 @@ char *join_list(t_node **list);
 void split_result(char *line, char *buffer);
 size_t	ft_strlcpy(char *dest, const char *src, size_t size);
 size_t	ft_strlen(const char *s);
+void    *ft_calloc(size_t nmemb, size_t size);
 
 #endif

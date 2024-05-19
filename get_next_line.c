@@ -11,6 +11,10 @@
 /* ************************************************************************** */
 #include "get_next_line.h"
 
+// int main() {
+// 	int fd = open("file.txt");
+// }
+
 char	*get_next_line(int fd)
 {
 	t_node		*list;
@@ -22,7 +26,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	if (!buffer)
 	{
-		buffer = calloc(BUFFER_SIZE + 1, sizeof(char));
+		buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 		if (!buffer)
 			return (NULL);
 		buffer[BUFFER_SIZE] = '\0';
@@ -49,7 +53,7 @@ void	create_list(int fd, t_node **list, char *bf)
 	t_node	*node;
 	int		chars;
 
-	buffer = calloc((BUFFER_SIZE + 1), sizeof(char));
+	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
 	if (ft_strlen(bf) > 0)
 	{
 		chars = ft_strlcpy(buffer, bf, ft_strlen(bf) + 1);
@@ -60,7 +64,7 @@ void	create_list(int fd, t_node **list, char *bf)
 	while (chars > 0)
 	{
 		node = new_node(chars + 1);
-		strncpy(node -> content, buffer, chars);
+		ft_strlcpy(node -> str, buffer, chars + 1);
 		lstadd_back(list, node);
 		if (strchr(buffer, '\n') || strchr(buffer, EOF))
 			break ;
@@ -76,36 +80,36 @@ void	create_list(int fd, t_node **list, char *bf)
  */
 char	*join_list(t_node **list)
 {
-	char	*result;
+	char	*res;
 	int		result_len;
 	t_node	*node;
-	int		offset;
+	int		off;
 
 	result_len = 0;
-	offset = 0;
+	off = 0;
 	node = *list;
 	while (node -> next)
 	{
-		result_len += strlen(node -> content);
+		result_len += ft_strlen(node -> str);
 		node = node -> next;
 	}
-	result_len += strlen(node -> content);
+	result_len += ft_strlen(node -> str);
 	node = *list;
-	result = calloc(result_len + 1, sizeof(char));
-	result[result_len] = '\0';
+	res = ft_calloc(result_len + 1, sizeof(char));
+	res[result_len] = '\0';
 	while (node -> next)
 	{
-		strcat(result + offset, node -> content);
-		offset += strlen(node -> content);
+		off += ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
+		//off += strlen(node -> str);
 		node = node -> next;
 	}
-	strcat(result + offset, node -> content);
-	return (result);
+	ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
+	return (res);
 }
 
 /*
- * Removes everything after the first newline character and returns the rest
- * of the string
+ * Removes everything after the first newline character and populate the buffer
+ * with the remaining part of the line
  */
 void	split_result(char *line, char *buffer)
 {
@@ -115,7 +119,7 @@ void	split_result(char *line, char *buffer)
 	if (nl)
 	{
 		if (buffer)
-			strcpy(buffer, nl + 1);
+			ft_strlcpy(buffer, nl + 1, (nl + 1) - buffer);
 		*(nl + 1) = '\0';
 	}
 }
