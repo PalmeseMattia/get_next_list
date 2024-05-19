@@ -67,7 +67,11 @@ void	create_list(int fd, t_node **list, char *bf)
 			break ;
 		chars = read(fd, buffer, BUFFER_SIZE);
 	}
-	memset(bf, 0, BUFFER_SIZE);
+	while(*bf)
+	{
+		*bf = 0;
+		bf++;
+	}
 	free(buffer);
 }
 

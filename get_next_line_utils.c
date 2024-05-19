@@ -35,7 +35,6 @@ t_node	*new_node(unsigned int content_size, char *content)
 	return (node);
 }
 
-
 size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 {
 	size_t	i;
@@ -64,11 +63,11 @@ size_t	ft_strlen(const char *s)
 	return (len);
 }
 
- void    *ft_calloc(size_t nmemb, size_t size)
- {
-	void    		*p;
+void	*ft_calloc(size_t nmemb, size_t size)
+{
+	void			*p;
 	unsigned char	*p_copy;
-	size_t  bytes;
+	size_t			bytes;
 
 	if (nmemb == 0 || size == 0)
 	{
@@ -82,7 +81,7 @@ size_t	ft_strlen(const char *s)
 	if (!p)
 		return (NULL);
 	p_copy = p;
-	while(bytes--)
+	while (bytes--)
 		*p_copy++ = 0;
 	return (p);
 }
@@ -92,10 +91,10 @@ char	*ft_strchr(const char *s, char c)
 	char	*str;
 
 	str = (char *)s;
-	while(*str)
+	while (*str)
 	{
 		if (*str == c)
-			return str;
+			return (str);
 		str++;
 	}
 	return (NULL);
