@@ -37,8 +37,7 @@ char	*get_next_line(int fd)
 	while (list)
 	{
 		next = list->next;
-		if (list->str)
-			free(list->str);
+		free(list->str);
 		free(list);
 		list = next;
 	}
@@ -57,20 +56,18 @@ void	create_list(int fd, t_node **list, char *bf)
 
 	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
 	if (ft_strlen(bf) > 0)
-	{
 		chars = ft_strlcpy(buffer, bf, ft_strlen(bf) + 1);
-		memset(bf, 0, BUFFER_SIZE);
-	}
 	else
 		chars = read(fd, buffer, BUFFER_SIZE);
 	while (chars > 0)
 	{
 		node = new_node(chars + 1, buffer);
 		lstadd_back(list, node);
-		if (strchr(buffer, '\n') || strchr(buffer, EOF))
+		if (ft_strchr(buffer, '\n') || ft_strchr(buffer, EOF))
 			break ;
 		chars = read(fd, buffer, BUFFER_SIZE);
 	}
+	memset(bf, 0, BUFFER_SIZE);
 	free(buffer);
 }
 
@@ -102,7 +99,7 @@ char	*join_list(t_node **list, char *buffer)
 		off += ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
 		node = node -> next;
 	}
-	nl = strchr(res, '\n');
+	nl = ft_strchr(res, '\n');
 	if (nl)
 	{
 		ft_strlcpy(buffer, nl + 1, (nl + 1) - buffer);

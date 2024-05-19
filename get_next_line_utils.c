@@ -35,22 +35,6 @@ t_node	*new_node(unsigned int content_size, char *content)
 	return (node);
 }
 
-void	free_list(t_node **list)
-{
-	t_node	*curr;
-	t_node	*next;
-
-	curr = *list;
-	while (curr)
-	{
-		next = curr->next;
-		if (curr->str)
-			free(curr->str);
-		free(curr);
-		curr = next;
-	}
-	*list = NULL;
-}
 
 size_t	ft_strlcpy(char *dest, const char *src, size_t size)
 {
@@ -101,4 +85,18 @@ size_t	ft_strlen(const char *s)
 	while(bytes--)
 		*p_copy++ = 0;
 	return (p);
+}
+
+char	*ft_strchr(const char *s, char c)
+{
+	char	*str;
+
+	str = (char *)s;
+	while(*str)
+	{
+		if (*str == c)
+			return str;
+		str++;
+	}
+	return (NULL);
 }
