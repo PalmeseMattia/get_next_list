@@ -27,8 +27,8 @@ t_node	*new_node(unsigned int content_size, char *content)
 			free(node);
 			return (NULL);
 		}
-		if (content != NULL)
-			ft_strlcpy(node -> str, content, ft_strlen(content) + 1);
+		if (content != NULL && *content)
+			ft_strlcpy(node -> str, content, content_size);
 	}
 	else
 		node -> str = NULL;

@@ -33,7 +33,6 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	result = join_list(&list, buffer);
-	//split_result(result, buffer);
 	free_list(&list);
 	return (result);
 }
@@ -58,8 +57,7 @@ void	create_list(int fd, t_node **list, char *bf)
 		chars = read(fd, buffer, BUFFER_SIZE);
 	while (chars > 0)
 	{
-		node = new_node(chars + 1, NULL);
-		ft_strlcpy(node -> str, buffer, chars + 1);
+		node = new_node(chars + 1, buffer);
 		lstadd_back(list, node);
 		if (strchr(buffer, '\n') || strchr(buffer, EOF))
 			break ;
@@ -103,23 +101,6 @@ char	*join_list(t_node **list, char *buffer)
 		*(nl + 1) = '\0';
 	}
 	return (res);
-}
-
-/*
- * Removes everything after the first newline character and populate the buffer
- * with the remaining part of the line
- */
-void	split_result(char *line, char *buffer)
-{
-	char	*nl;
-
-	nl = strchr(line, '\n');
-	if (nl)
-	{
-		if (buffer)
-			ft_strlcpy(buffer, nl + 1, (nl + 1) - buffer);
-		*(nl + 1) = '\0';
-	}
 }
 
 t_node	*lstadd_back(t_node **head, t_node *new_node)
