@@ -11,10 +11,6 @@
 /* ************************************************************************** */
 #include "get_next_line.h"
 
-// int main() {
-// 	int fd = open("file.txt");
-// }
-
 char	*get_next_line(int fd)
 {
 	t_node		*list;
@@ -67,7 +63,7 @@ void	create_list(int fd, t_node **list, char *bf)
 			break ;
 		chars = read(fd, buffer, BUFFER_SIZE);
 	}
-	while(*bf)
+	while (*bf)
 	{
 		*bf = 0;
 		bf++;
@@ -86,7 +82,6 @@ char	*join_list(t_node **list, char *buffer)
 	int		res_len;
 	t_node	*node;
 	int		off;
-	char	*nl;
 
 	res_len = 0;
 	off = 0;
@@ -103,12 +98,7 @@ char	*join_list(t_node **list, char *buffer)
 		off += ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
 		node = node -> next;
 	}
-	nl = ft_strchr(res, '\n');
-	if (nl)
-	{
-		ft_strlcpy(buffer, nl + 1, (nl + 1) - buffer);
-		*(nl + 1) = '\0';
-	}
+	split_result(res, buffer);
 	return (res);
 }
 
@@ -128,4 +118,17 @@ t_node	*lstadd_back(t_node **head, t_node *new_node)
 		last -> next = new_node;
 	}
 	return (new_node);
+}
+
+void	split_result(char *line, char *buffer)
+{
+	char	*nl;
+
+	nl = ft_strchr(line, '\n');
+	if (nl)
+	{
+		if (buffer)
+			ft_strlcpy(buffer, nl + 1, (nl + 1) - buffer);
+		*(nl + 1) = '\0';
+	}
 }

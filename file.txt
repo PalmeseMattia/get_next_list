@@ -1,5 +1,0 @@
-prima riga bella ciotta
-seconda per l'amor di dio
-terza volta che scrivo
-
-quinta riga dopo un new line
