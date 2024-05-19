@@ -27,8 +27,6 @@ char	*get_next_line(int fd)
 	if (!buffer)
 	{
 		buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
-		if (!buffer)
-			return (NULL);
 		buffer[BUFFER_SIZE] = '\0';
 	}
 	create_list(fd, &list, buffer);
@@ -100,7 +98,6 @@ char	*join_list(t_node **list)
 	while (node -> next)
 	{
 		off += ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
-		//off += strlen(node -> str);
 		node = node -> next;
 	}
 	ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
