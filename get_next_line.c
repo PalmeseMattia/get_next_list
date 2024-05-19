@@ -90,7 +90,6 @@ char	*join_list(t_node **list)
 	}
 	node = *list;
 	res = ft_calloc(result_len + 1, sizeof(char));
-	res[result_len] = '\0';
 	while (node)
 	{
 		off += ft_strlcpy(res + off, node -> str, ft_strlen(node -> str) + 1);
