@@ -20,6 +20,7 @@ char	*get_next_line(int fd)
 	t_node		*list;
 	char		*result;
 	static char	*buffer = NULL;
+	t_node		*next;
 
 	list = NULL;
 	if (fd < 0)
@@ -33,7 +34,14 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	result = join_list(&list, buffer);
-	free_list(&list);
+	while (list)
+	{
+		next = list->next;
+		if (list->str)
+			free(list->str);
+		free(list);
+		list = next;
+	}
 	return (result);
 }
 
